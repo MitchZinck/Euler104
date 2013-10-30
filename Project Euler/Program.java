@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /*
  * 
@@ -11,21 +12,25 @@ public class Program {
 	private static BigInteger num = new BigInteger ("1");
 	private static BigInteger integer = new BigInteger ("0");
 	private static BigInteger fibonacci = new BigInteger ("0");
-	private static BigInteger mod10 = new BigInteger ("10");
 	private static BigInteger tailCut = new BigInteger ("1000000000");
-	private static BigInteger tailTrue = new BigInteger ("0");
 	private static int runTime = 0;
 	
+	/*
+	 * The main loop
+	 */
 	public static void loop(double time) {
 		while(isPandigital()){
 			fibonacci();
-			isPandigital();
+			//isPandigital();
 			runTime++;
 			System.out.println(runTime);
 		}
 		System.out.println("Program completed in " + (timeEnd(time)/1000) + " seconds.\nThe correct number was " + runTime);
 	}
 	
+	/*
+	 * Calls the methods that check whether {@fibonacci} is pandigital on both ends
+	 */
 	public static boolean isPandigital() {
 		if(!tail()) {
 			if(!front()) {
@@ -35,46 +40,53 @@ public class Program {
 		return true;		
 	}
 	
+	/*
+	 * Check the first 9 numbers of {@fibonacci} to see if they are pandigital
+	 */
 	public static boolean front() {		
-
-		String fib = fibonacci.toString().substring(0, 9);
+		int fib = lead9(fibonacci).intValue();
+		int[] integer = new int[9];
 		
-		/*
-		 * 
-		 * I found this other snippet on google just to see if it was any faster which it kinda was. Just uncomment everything that is commented, 
-		 * and comment String fib.
-		 * int fib = lead9(fibonacci).intValue();
-		 * 
-		 */
+		for(int z = 0; z < 9; z++) {
+			integer[z] = fib % 10;
+			fib /= 10;
+		}
 		
-		for(int i = 1; i <= 9; i++) {
-			//String numb = Integer.toString(fib);
-			String digit = Integer.toString(i);
-			//if(!numb.contains(digit))
-			if(!fib.contains(digit)) {
+		Arrays.sort(integer);
+		
+		for(int i = 0; i < integer.length; i++) {
+			if(integer[i] != i + 1) {
 				return true;
 			}
-		}		
+		}
 		return false;
 	}
 	
-	public static boolean tail() {
-		if(fibonacci.bitCount() < 58) {
-			return true;
+	/*
+	 * Check the last 9 numbers of {@fibonacci} to see if they are pandigital
+	 */
+	public static boolean tail() {		
+		int fib = fibonacci.mod(tailCut).intValue();		
+		int[] integer = new int[9];
+		
+		for(int z = 0; z < 9; z++) {
+			integer[z] = fib % 10;
+			fib /= 10;
 		}
 		
-		int fib = fibonacci.mod(tailCut).intValue();
+		Arrays.sort(integer);
 		
-		for(int i = 1; i <= 9; i++) {
-			String numb = Integer.toString(fib);
-			String digit = Integer.toString(i);
-			if(!numb.contains(digit)){
+		for(int i = 0; i < integer.length; i++) {
+			if(integer[i] != i + 1) {
 				return true;
 			}
-		}		
+		}
 		return false;		
 	}
 	
+	/*
+	 * Algorithm to cut the first 9 digits out of the {@fibonacci} integer
+	 */
 	public static BigInteger lead9(BigInteger n) {
         int aprox = (int) ((n.bitLength() * Math.log10(2)) + 1);
         n = n.divide(BigInteger.TEN.pow(aprox - 10));
@@ -82,6 +94,9 @@ public class Program {
         return n;
     }
 	
+	/*
+	 * Fibonacci generator
+	 */
 	public static void fibonacci() {
 		integer = fibonacci;
 		fibonacci = fibonacci.add(num);
